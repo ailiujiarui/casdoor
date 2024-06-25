@@ -43,7 +43,7 @@ import DouyinLoginButton from "./DouyinLoginButton";
 import LoginButton from "./LoginButton";
 import * as AuthBackend from "./AuthBackend";
 import {WechatOfficialAccountModal} from "./Util";
-
+import {message} from "antd";
 function getSigninButton(provider) {
   const text = i18next.t("login:Sign in with {type}").replace("{type}", provider.displayName !== "" ? provider.displayName : provider.type);
   if (provider.type === "GitHub") {
@@ -134,34 +134,57 @@ export function goToWeb3Url(application, provider, method) {
       });
   }
 }
-
-export function renderProviderLogo(provider, application, width, margin, size, location) {
+export function renderProviderLogo(provider, application, width, margin, size, location, agree) {
   if (size === "small") {
     if (provider.category === "OAuth") {
       if (provider.type === "WeChat" && provider.clientId2 !== "" && provider.clientSecret2 !== "" && provider.disableSsl === true && !navigator.userAgent.includes("MicroMessenger")) {
         return (
           <a key={provider.displayName} >
-            <img width={width} height={width} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={{margin: margin}} onClick={() => {
-              WechatOfficialAccountModal(application, provider, "signup");
+            <img width={width} height={width} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={{margin: margin}} onClick={(e) => {
+              if (!agree.getValue()) {
+                e.preventDefault();
+                message.error("signup:Please accept the agreement!");
+              } else {
+                WechatOfficialAccountModal(application, provider, "signup");
+              }
             }} />
           </a>
         );
       } else {
         return (
-          <a key={provider.displayName} href={Provider.getAuthUrl(application, provider, "signup")}>
+          <a key={provider.displayName} href={Provider.getAuthUrl(application, provider, "signup")} onClick={(e) => {
+            if (!agree.getValue()) {
+              e.preventDefault();
+              message.error("signup:Please accept the agreement!");
+            }
+          }}>
             <img width={width} height={width} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={{margin: margin}} />
           </a>
         );
       }
     } else if (provider.category === "SAML") {
       return (
-        <a key={provider.displayName} onClick={() => goToSamlUrl(provider, location)}>
+        <a key={provider.displayName} onClick={(e) => {
+          if (!agree.getValue()) {
+            e.preventDefault();
+            message.error("signup:Please accept the agreement!");
+          } else {
+            goToSamlUrl(provider, location);
+          }
+        }}>
           <img width={width} height={width} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={{margin: margin}} />
         </a>
       );
     } else if (provider.category === "Web3") {
       return (
-        <a key={provider.displayName} onClick={() => goToWeb3Url(application, provider, "signup")}>
+        <a key={provider.displayName} onClick={(e) => {
+          if (!agree.getValue()) {
+            e.preventDefault();
+            message.error("signup:Please accept the agreement!");
+          } else {
+            goToWeb3Url(application, provider, "signup");
+          }
+        }}>
           <img width={width} height={width} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={{margin: margin}} />
         </a>
       );
@@ -175,7 +198,14 @@ export function renderProviderLogo(provider, application, width, margin, size, l
     const customSpanStyle = {textAlign: "center", width: "100%", fontSize: "19px"};
     if (provider.category === "OAuth") {
       return (
-        <a key={provider.displayName} href={Provider.getAuthUrl(application, provider, "signup")} style={customAStyle}>
+        <a key={provider.displayName} href={Provider.getAuthUrl(application, provider, "signup")} style={customAStyle} onClick={(e) => {
+          if (!agree.getValue()) {
+            e.preventDefault();
+            message.error("signup:Please accept the agreement!");
+          } else {
+            goToWeb3Url(application, provider, "signup");
+          }
+        }}>
           <div style={customButtonStyle}>
             <img width={26} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={customImgStyle} />
             <span style={customSpanStyle}>{text}</span>
@@ -184,7 +214,14 @@ export function renderProviderLogo(provider, application, width, margin, size, l
       );
     } else if (provider.category === "SAML") {
       return (
-        <a key={provider.displayName} onClick={() => goToSamlUrl(provider, location)} style={customAStyle}>
+        <a key={provider.displayName} onClick={(e) => {
+          if (!agree.getValue()) {
+            e.preventDefault();
+            message.error("signup:Please accept the agreement!");
+          } else {
+            goToSamlUrl(provider, location);
+          }
+        }}style={customAStyle}>
           <div style={customButtonStyle}>
             <img width={26} src={getProviderLogoURL(provider)} alt={provider.displayName} className="provider-img" style={customImgStyle} />
             <span style={customSpanStyle}>{text}</span>
@@ -197,7 +234,14 @@ export function renderProviderLogo(provider, application, width, margin, size, l
     if (provider.category === "SAML") {
       return (
         <div key={provider.displayName} className="provider-big-img">
-          <a onClick={() => goToSamlUrl(provider, location)}>
+          <a onClick={(e) => {
+            if (!agree.getValue()) {
+              e.preventDefault();
+              message.error("signup:Please accept the agreement!");
+            } else {
+              goToSamlUrl(provider, location);
+            }
+          }}>
             {
               getSigninButton(provider)
             }
@@ -207,7 +251,14 @@ export function renderProviderLogo(provider, application, width, margin, size, l
     } else if (provider.category === "Web3") {
       return (
         <div key={provider.displayName} className="provider-big-img">
-          <a onClick={() => goToWeb3Url(application, provider, "signup")}>
+          <a onClick={(e) => {
+            if (!agree.getValue()) {
+              e.preventDefault();
+              message.error("signup:Please accept the agreement!");
+            } else {
+              goToWeb3Url(application, provider, "signup");
+            }
+          }} >
             {
               getSigninButton(provider)
             }
@@ -217,7 +268,12 @@ export function renderProviderLogo(provider, application, width, margin, size, l
     } else {
       return (
         <div key={provider.displayName} className="provider-big-img">
-          <a href={Provider.getAuthUrl(application, provider, "signup")}>
+          <a href={Provider.getAuthUrl(application, provider, "signup")} onClick={(e) => {
+            if (!agree.getValue()) {
+              e.preventDefault();
+              message.error("signup:Please accept the agreement!");
+            }
+          }} >
             {
               getSigninButton(provider)
             }
