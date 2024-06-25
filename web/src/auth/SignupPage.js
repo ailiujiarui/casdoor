@@ -30,6 +30,7 @@ import {withRouter} from "react-router-dom";
 import {CountryCodeSelect} from "../common/select/CountryCodeSelect";
 import * as PasswordChecker from "../common/PasswordChecker";
 import * as InvitationBackend from "../backend/InvitationBackend";
+import agree from "./Agree";
 
 const formItemLayout = {
   labelCol: {
@@ -654,7 +655,7 @@ class SignupPage extends React.Component {
       return (
 
         application.providers.filter(providerItem => this.isProviderVisible(providerItem)).map(providerItem => {
-          return ProviderButton.renderProviderLogo(providerItem.provider, application, null, null, signupItem.rule, this.props.location);
+          return ProviderButton.renderProviderLogo(providerItem.provider, application, null, null, signupItem.rule, this.props.location, agree);
         })
 
       );
